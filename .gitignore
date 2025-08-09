@@ -1,2 +1,8 @@
 __pycache__
 test_*
+*.fms
+
+input.txt
+input.wav
+output.txt
+output.wav

@@ -26,9 +26,9 @@ class N163Instrument:
         )
 
 
-def make_default_file_with_n163_instruments(instruments: list[N163Instrument]):
+def make_default_file_with_n163_instruments(name: str, instruments: list[N163Instrument]):
     content = construct_file_head(
-        "4.3.2", "FamiStudio", "WavetableFile", "WTConverter", "N163", 1
+        "4.3.2", "FamiStudio", name, "WTConverter", "N163", 1
     )
     content += "\n"
     content += "\n".join(str(i) for i in instruments) + "\n"
