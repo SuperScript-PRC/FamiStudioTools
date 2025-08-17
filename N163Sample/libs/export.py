@@ -37,16 +37,29 @@ def generate_n163_instrument(name: str, wave: NDArray[np.uint8]):
     )
 
 
-def generate_note(instrument: Property, time: int):
+def generate_note(instrument: Property, time: int, first: bool):
+    args = {
+        "Time": str(time),
+        "Value": "A#4",
+        "Duration": "4",
+        "Instrument": instrument.includes["Name"],
+        "PhaseReset": "1",
+    }
+    if first:
+        args["FinePitch"] = "-13"
     return Property(
         4,
         "Note",
-        {
-            "Time": str(time),
-            "Value": "A#4",
-            "Duration": "4",
-            "Instrument": instrument.includes["Name"],
-        },
+        args,
+        children=[],
+    )
+
+
+def generate_phasereset(time: int):
+    return Property(
+        4,
+        "Note",
+        {"Time": str(time), "PhaseReset": "1"},
         children=[],
     )
 
@@ -82,13 +95,16 @@ def collect_waves(ws: list[NDArray[np.uint8]]):
     PATTERN_MAX_NOTES = 40
     patterns.append(current_pattern)
     pattern_instances.append(pinstance)
+    first = True
     for w in ws:
         instrument_name = f"Wave {instrument_counter}"
         instrument = generate_n163_instrument(instrument_name, w)
         instruments.append(instrument)
-        current_pattern.children.append(
-            generate_note(instrument, instrument_counter % PATTERN_MAX_NOTES * 4)
-        )
+        now_time = instrument_counter % PATTERN_MAX_NOTES * 4
+        current_pattern.children.append(generate_note(instrument, now_time, first))
+        first = False
+        for delta in range(3):
+            current_pattern.children.append(generate_phasereset(now_time + delta + 1))
         instrument_counter += 1
         if instrument_counter % PATTERN_MAX_NOTES == 0:
             pattern_counter += 1
