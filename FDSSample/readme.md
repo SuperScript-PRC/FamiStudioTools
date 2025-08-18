@@ -7,7 +7,7 @@ So we can calculate the max sampling rate of FDS instrument is:
 
 - 1s = 64 * 60 = 3840 Hz = 3.84kHz
 
-But its depth is better than N163.
+But its depth is better than N163. ~~However, the quality is worse than N163 even in same wave size~~
 
 ## Usage
 
