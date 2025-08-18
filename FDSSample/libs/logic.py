@@ -46,7 +46,7 @@ def resample_audio(input_file: IO[bytes], target_rate=14400):
     # print(f"重采样后长度: {len(resampled_data)} 采样点")
 
 
-def normalize_to_height_16(samples: NDArray[np.int32], h: int = 16):
+def normalize_to_height(samples: NDArray[np.int32], h: int = 16):
     """
     将采样数据归一化到高度范围 [0, h] (总共 h 个级别)
 

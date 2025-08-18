@@ -9,22 +9,18 @@ import libs.cor_export
 # Basic configuration
 FAMISTUDIO_VERSION = "4.4.1"
 
-# If you want 240 sized wave, use this (the config is recommended)
-# WAVE_SIZE = 240
-# BASE_NOTE = "A#4"
-# FIRST_FINE_PITCH = -13
 
-# If you want 64 sized wave, use this (the config is recommended)
-WAVE_SIZE = 64
-BASE_NOTE = "B2"
-FIRST_FINE_PITCH = -2
 
 ##### CONFIGURATION END ##
 
-# These are automatically calculated
+# Theses are constants
+WAVE_SIZE = 64
+WAVE_COUNT = 16
+BASE_NOTE = "B2"
+FIRST_FINE_PITCH = -2
 SAMPLE_RATE = WAVE_SIZE * 60
-WAVE_PAGES = 1024 // WAVE_SIZE
-TOTAL_WAVE_LENGTH = WAVE_PAGES * WAVE_SIZE
+TOTAL_WAVE_LENGTH = WAVE_COUNT * WAVE_SIZE
+
 
 # These will be automatically calculated later
 PATTERN_LENGTH = 160
@@ -35,8 +31,8 @@ print("Reading and resampling wave file")
 with open(thispath / "input.wav", "rb") as f:
     resampled = libs.logic.resample_audio(f, SAMPLE_RATE)
 
-print("Normalizing wave file to N163 format")
-corr_wave = libs.logic.normalize_to_height_16(resampled)
+print("Normalizing wave file to FDS format")
+corr_wave = libs.logic.normalize_to_height(resampled, 64)
 
 print("Spliting wave")
 corr_waves = libs.logic.to_waves(corr_wave, TOTAL_WAVE_LENGTH)
@@ -50,8 +46,6 @@ instruments, patterns, pattern_instances = libs.export.collect_waves(
     corr_waves,
     BASE_NOTE,
     FIRST_FINE_PITCH,
-    wave_size=WAVE_SIZE,
-    wave_count=WAVE_PAGES,
     pattern_length=PATTERN_LENGTH,
 )
 
