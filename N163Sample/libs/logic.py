@@ -5,7 +5,6 @@ from scipy.io import wavfile
 from typing import IO
 
 
-
 def resample_audio(input_file: IO[bytes], target_rate=14400):
     """
     将音频文件重采样到目标采样率
@@ -84,7 +83,6 @@ def normalize_to_height_16(samples: NDArray[np.int32]):
     return normalized.astype(np.uint8)
 
 
-def to_n163_waves(samples_normalized: NDArray[np.uint8]):
-    L = 960
-    indices = np.arange(L, len(samples_normalized), L)
+def to_n163_waves(samples_normalized: NDArray[np.uint8], total_wavelength: int):
+    indices = np.arange(total_wavelength, len(samples_normalized), total_wavelength)
     return np.array_split(samples_normalized, indices)
