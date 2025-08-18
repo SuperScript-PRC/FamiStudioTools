@@ -6,15 +6,18 @@ import libs.cor_export
 
 ##### CONFIGURATION #####
 
+# Basic configuration
+FAMISTUDIO_VERSION = "4.4.1"
+
 # If you want 240 sized wave, use this (the config is recommended)
-WAVE_SIZE = 240
-BASE_NOTE = "A#4"
-FIRST_FINE_PITCH = -13
+# WAVE_SIZE = 240
+# BASE_NOTE = "A#4"
+# FIRST_FINE_PITCH = -13
 
 # If you want 64 sized wave, use this (the config is recommended)
-# WAVE_SIZE = 64
-# BASE_NOTE = "B2"
-# FIRST_FINE_PITCH = -2
+WAVE_SIZE = 64
+BASE_NOTE = "B2"
+FIRST_FINE_PITCH = -2
 
 ##### CONFIGURATION END ##
 
@@ -53,8 +56,8 @@ instruments, patterns, pattern_instances = libs.export.collect_waves(
 )
 
 print("Constructing file")
-file_node = libs.file_constructor.construct_file(
-    instruments, [*patterns, *pattern_instances]
+file_node = libs.file_constructor.construct_file(FAMISTUDIO_VERSION,
+    instruments, patterns, pattern_instances
 )
 
 with open(thispath / "output.txt", "w") as f:

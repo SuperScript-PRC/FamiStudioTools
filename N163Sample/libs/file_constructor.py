@@ -2,7 +2,10 @@ from .define import Property
 
 
 def construct_file(
-    instrument_nodes: list[Property], n163_channel_subnodes: list[Property]
+    famistudio_version: str,
+    instrument_nodes: list[Property],
+    patterns: list[Property],
+    pattern_instances: list[Property],
 ):
     song_node = Property(
         1,
@@ -10,7 +13,7 @@ def construct_file(
         {
             "Name": "Song 1",
             "Color": "0000FF",
-            "Length": "64",
+            "Length": str(len(patterns)),
             "LoopPoint": "0",
             "PatternLength": "16",
             "BeatLength": "4",
@@ -24,23 +27,25 @@ def construct_file(
             Property(2, "Channel", includes={"Type": "Triangle"}, children=[]),
             Property(2, "Channel", includes={"Type": "Noise"}, children=[]),
             Property(2, "Channel", includes={"Type": "DPCM"}, children=[]),
-            Property(2, "Channel", includes={"Type": "N163Wave1"}, children=n163_channel_subnodes),
+            Property(
+                2,
+                "Channel",
+                includes={"Type": "N163Wave1"},
+                children=patterns + pattern_instances,
+            ),
         ],
     )
     file_node = Property(
         0,
         "Project",
         {
-            "Version": "4.4.1",
+            "Version": famistudio_version,
             "TempoMode": "FamiStudio",
             "Name": "New Project",
             "Author": "FamiStudio",
             "Expansions": "N163",
             "NumN163Channels": "1",
         },
-        children=[
-            *instrument_nodes,
-            song_node
-        ],
+        children=[*instrument_nodes, song_node],
     )
     return file_node
