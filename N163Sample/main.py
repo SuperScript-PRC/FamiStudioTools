@@ -13,7 +13,7 @@ FAMISTUDIO_VERSION = (
 SILENT_THRESHOLD = (
     20  # When a local int volume is below this threshold, it will be considered silent
 )
-VOLUME_FIX_VALUE = 1.1  # Add it when you find the volumes are all below 15
+VOLUME_FIX_VALUE = 1.1  # Add it when you find the instrument volumes are all below 15
 
 # If you want 240 sized wave, use this (the config is recommended)
 # WAVE_SIZE = 240

@@ -98,6 +98,6 @@ def normalize_to_height_and_get_volume(
         if volume > max_vol:
             max_vol = volume
 
-    print(f"Max vol={max_vol}")
+    # print(f"Max vol={max_vol}")
 
     return volumes, sample_blocks_normalized
