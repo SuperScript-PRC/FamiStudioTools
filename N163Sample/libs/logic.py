@@ -75,7 +75,9 @@ def normalize_to_height_and_get_volume(
         local_min_val = np.min(block)
         local_max_val = np.max(block)
         local_volume_delta = local_max_val - local_min_val
-        if local_volume_delta > silent_threshold:
+        if local_volume_delta == 0:
+            volume = 0
+        elif local_volume_delta > silent_threshold:
             volume = max(
                 1,
                 min(
@@ -90,9 +92,12 @@ def normalize_to_height_and_get_volume(
             )
         else:
             volume = 0
-        normalized = (block - local_min_val) / (local_max_val - local_min_val) * (
-            target_max - target_min
-        ) + target_min
+        if local_volume_delta > 0:
+            normalized = (block - local_min_val) / local_volume_delta * (
+                target_max - target_min
+            ) + target_min
+        else:
+            normalized = np.full(len(block),1, np.uint8)
         sample_blocks_normalized.append(normalized.astype(np.uint8))
         volumes[i] = volume
         if volume > max_vol:
