@@ -16,9 +16,9 @@ SILENT_THRESHOLD = (
 VOLUME_FIX_VALUE = 1.1  # Add it when you find the instrument volumes are all below 15
 
 # If you want 240 sized wave, use this (the config is recommended)
-# WAVE_SIZE = 240
-# BASE_NOTE = "A#4"
-# FIRST_FINE_PITCH = -13
+WAVE_SIZE = 240
+BASE_NOTE = "A#4"
+FIRST_FINE_PITCH = -13
 
 # If you want 128 sized wave, use this (the config is recommended)
 # WAVE_SIZE = 128
@@ -26,9 +26,9 @@ VOLUME_FIX_VALUE = 1.1  # Add it when you find the instrument volumes are all be
 # FIRST_FINE_PITCH = -5
 
 # If you want 64 sized wave, use this (the config is recommended)
-WAVE_SIZE = 64
-BASE_NOTE = "B2"
-FIRST_FINE_PITCH = -2
+# WAVE_SIZE = 64
+# BASE_NOTE = "B2"
+# FIRST_FINE_PITCH = -2
 
 # If you want 32 sized wave, use this (the config is recommended) [That's CRAZY!!!!!!]
 # WAVE_SIZE = 32
