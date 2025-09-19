@@ -21,6 +21,7 @@ def next_rainbow_color():
 def generate_n163_instrument(
     name: str,
     folder_name: str,
+    volume: NDArray[np.uint8],
     wave: NDArray[np.uint8],
     wave_size: int,
     wave_count: int,
@@ -45,7 +46,17 @@ def generate_n163_instrument(
                 {
                     "Type": "N163Wave",
                     "Length": str(wave_size * wave_count),
-                    "Values": ",".join(str(i) for i in wave),
+                    "Values": ",".join(map(str, wave)),
+                },
+                children=[],
+            ),
+            Property(
+                2,
+                "Envelope",
+                {
+                    "Type": "Volume",
+                    "Length": str(wave_count),
+                    "Values": ",".join(map(str, volume)),
                 },
                 children=[],
             ),
@@ -114,7 +125,8 @@ def generate_pattern(pattern_time: int):
 
 
 def collect_waves(
-    ws: list[NDArray[np.uint8]],
+    volumes: NDArray[np.uint8],
+    waves: list[NDArray[np.uint8]],
     base_note: str,
     first_fine_pitch: int = 0,
     wave_size: int = 240,
@@ -131,11 +143,13 @@ def collect_waves(
     patterns.append(current_pattern)
     pattern_instances.append(pinstance)
     first = True
-    for w in ws:
+    for i in range(0, len(volumes), wave_count):
+        wave = merge(waves[i:i+wave_count])
+        volume = volumes[i:i+wave_count]
         instrument_name = f"Wave {instrument_counter}"
         folder_name = f"WaveFolder {instrument_counter // 100}"
         instrument = generate_n163_instrument(
-            instrument_name, folder_name, w, wave_size, wave_count
+            instrument_name, folder_name, volume, wave, wave_size, wave_count
         )
         instruments.append(instrument)
         now_time = instrument_counter % PATTERN_MAX_NOTES * wave_count
@@ -159,3 +173,6 @@ def collect_waves(
             patterns.append(current_pattern)
             pattern_instances.append(pinstance)
     return instruments, patterns, pattern_instances
+
+def merge(arrs: list[NDArray[np.uint8]]) -> NDArray[np.uint8]:
+    return np.concatenate(arrs)

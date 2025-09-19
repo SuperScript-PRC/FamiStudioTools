@@ -46,43 +46,58 @@ def resample_audio(input_file: IO[bytes], target_rate=14400):
     # print(f"重采样后长度: {len(resampled_data)} 采样点")
 
 
-def normalize_to_height_16(samples: NDArray[np.int32], h: int = 16):
-    """
-    将采样数据归一化到高度范围 [0, h] (总共 h 个级别)
-
-    Args:
-        samples: 原始采样数据列表
-
-    Returns:
-        归一化后的采样数据列表
-    """
-    # if not samples:
-    #     return samples.astype(np.uint8)
-
-    # 转换为numpy数组以便处理
+def normalize_to_height_and_get_volume(
+    samples: NDArray[np.int32],
+    single_wave_length: int,
+    wave_height: int,
+    volume_max: int,
+    *,
+    volume_fix_value: float = 1.1,
+    silent_threshold: int = 20,
+) -> tuple[NDArray[np.uint8], list[NDArray]]:
     samples_array = np.array(samples)
 
-    # 找到原始数据的最小值和最大值
     min_val = np.min(samples_array)
     max_val = np.max(samples_array)
 
-    # 如果所有值都相同，返回中间值
     if min_val == max_val:
-        raise ValueError("All values are the same")
+        raise ValueError("All values are the same ..That means no sound!")
 
-    # 线性映射到 [0, h] 范围
-    # 目标范围是32个级别 (0 到 h)
-    target_min, target_max = 0, h
+    sample_blocks = np.array_split(
+        samples_array,
+        np.arange(single_wave_length, len(samples_array), single_wave_length),
+    )
+    target_min, target_max = 0, wave_height
+    sample_blocks_normalized = []
+    volumes = np.zeros(len(sample_blocks), np.uint8)
+    max_vol = 0
+    for i, block in enumerate(sample_blocks):
+        local_min_val = np.min(block)
+        local_max_val = np.max(block)
+        local_volume_delta = local_max_val - local_min_val
+        if local_volume_delta > silent_threshold:
+            volume = max(
+                1,
+                min(
+                    volume_max,
+                    round(
+                        (local_max_val - local_min_val)
+                        / (max_val - min_val)
+                        * volume_max
+                        * volume_fix_value
+                    ),
+                ),
+            )
+        else:
+            volume = 0
+        normalized = (block - local_min_val) / (local_max_val - local_min_val) * (
+            target_max - target_min
+        ) + target_min
+        sample_blocks_normalized.append(normalized.astype(np.uint8))
+        volumes[i] = volume
+        if volume > max_vol:
+            max_vol = volume
 
-    # 执行线性变换: y = (x - min) / (max - min) * (target_max - target_min) + target_min
-    normalized = (samples_array - min_val) / (max_val - min_val) * (
-        target_max - target_min
-    ) + target_min
+    print(f"Max vol={max_vol}")
 
-    # 转换为整数并返回列表
-    return normalized.astype(np.uint8)
-
-
-def to_waves(samples_normalized: NDArray[np.uint8], total_wavelength: int):
-    indices = np.arange(total_wavelength, len(samples_normalized), total_wavelength)
-    return np.array_split(samples_normalized, indices)
+    return volumes, sample_blocks_normalized
