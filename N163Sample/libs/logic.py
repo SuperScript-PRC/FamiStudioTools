@@ -27,18 +27,13 @@ def resample_audio(input_file: IO[bytes], target_rate=14400):
     target_length = int(len(data) * ratio)
     resampled_data = signal.resample(data, target_length)
 
-    # # 转换数据类型以保持原始格式
-    # if data.dtype == np.int16:
-    #     resampled_data = np.clip(resampled_data, -32768, 32767).astype(np.int16)
-    # elif data.dtype == np.int32:
-    #     resampled_data = np.clip(resampled_data, -2147483648, 2147483647).astype(
-    #         np.int32
-    #     )
-    # elif data.dtype == np.uint8:
-    #     resampled_data = np.clip(resampled_data, 0, 255).astype(np.uint8)
+    # 对于 float32 wav 的特殊处理
+    if np.min(resampled_data) > -1.0 and np.max(resampled_data) < 1.0:
+        resampled_data = resampled_data * 2147483647
 
-    # 保存重采样后的音频
-    return np.clip(resampled_data, -2147483648, 2147483647).astype(np.int32)
+    cliped = np.clip(resampled_data, -2147483648, 2147483647).astype(np.int32)
+
+    return cliped
 
     # print(f"原始采样率: {original_rate} Hz")
     # print(f"目标采样率: {target_rate} Hz")
@@ -61,7 +56,7 @@ def normalize_to_height_and_get_volume(
     max_val = np.max(samples_array)
 
     if min_val == max_val:
-        raise ValueError("All values are the same ..That means no sound!")
+        raise ValueError(f"All values are the same ..That means no sound! :{min_val}")
 
     sample_blocks = np.array_split(
         samples_array,
