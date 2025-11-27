@@ -5,6 +5,8 @@ from .define import Property
 color_counter = 0
 C = 512 / 40
 
+INSTRUMENT_NAME_FORMATTER = "Wave %d"
+FOLDER_NAME_FORMAT = "WaveFolder %d"
 
 def next_rainbow_color():
     global color_counter
@@ -146,8 +148,8 @@ def collect_waves(
     for i in range(0, len(volumes), wave_count):
         wave = merge(waves[i:i+wave_count])
         volume = volumes[i:i+wave_count]
-        instrument_name = f"Wave {instrument_counter}"
-        folder_name = f"WaveFolder {instrument_counter // 100}"
+        instrument_name = INSTRUMENT_NAME_FORMATTER % instrument_counter
+        folder_name = FOLDER_NAME_FORMAT % (instrument_counter // 100)
         instrument = generate_n163_instrument(
             instrument_name, folder_name, volume, wave, wave_size, wave_count
         )
